@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Send, Bot, User, Code, CheckCircle, ChevronDown, ChevronUp, Terminal, Shield } from 'lucide-react';
+import { Sparkles, Send, Bot, User, Code, CheckCircle, ChevronDown, ChevronUp, Terminal } from 'lucide-react';
 import { executeAgentQuery } from '../services/geminiAgent';
 
 export default function PureAirAssistant({ activeCity, activeProfile }) {
@@ -63,20 +63,24 @@ How can I help you optimize your daily life today?
   };
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
+    <section
+      role="region"
+      aria-label="PureAir GenAI Environmental Copilot"
+      className="space-y-4 max-w-4xl mx-auto"
+    >
       {/* Header Info */}
       <div className="glass-card rounded-2xl p-4 border border-slate-800 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white">
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-4 h-4" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="font-bold text-sm text-slate-100 flex items-center gap-2">
+            <h2 className="font-bold text-sm text-slate-100 flex items-center gap-2">
               <span>PureAir GenAI Agent</span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono border border-emerald-500/30">
                 Tool-Orchestrated
               </span>
-            </h3>
+            </h2>
             <p className="text-[11px] text-slate-400">
               Real-time Inversion Modeling · Berkeley Earth Toxicology · ASHRAE 62.2 IAQ
             </p>
@@ -85,34 +89,42 @@ How can I help you optimize your daily life today?
 
         {recentToolCalls.length > 0 && (
           <button
+            type="button"
+            aria-expanded={showToolDrawer}
+            aria-controls="tool-inspector-panel"
             onClick={() => setShowToolDrawer(!showToolDrawer)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-emerald-400 font-mono border border-emerald-500/30 transition"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-emerald-400 font-mono border border-emerald-500/30 transition focus-visible:ring-2 focus-visible:ring-emerald-400 focus:outline-none"
           >
-            <Terminal className="w-3.5 h-3.5" />
+            <Terminal className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{recentToolCalls.length} Tools Executed</span>
-            {showToolDrawer ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            {showToolDrawer ? <ChevronUp className="w-3.5 h-3.5" aria-hidden="true" /> : <ChevronDown className="w-3.5 h-3.5" aria-hidden="true" />}
           </button>
         )}
       </div>
 
       {/* Tool Execution Drawer */}
       {showToolDrawer && recentToolCalls.length > 0 && (
-        <div className="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 space-y-2 text-xs font-mono">
+        <div
+          id="tool-inspector-panel"
+          role="region"
+          aria-label="GenAI Tool Execution Inspector"
+          className="p-4 rounded-xl bg-slate-900 border border-emerald-500/30 space-y-2 text-xs font-mono"
+        >
           <div className="flex items-center justify-between text-emerald-400 font-bold border-b border-slate-800 pb-1.5">
             <span className="flex items-center gap-1.5">
-              <Code className="w-4 h-4" />
+              <Code className="w-4 h-4" aria-hidden="true" />
               GenAI Tool Execution Inspector
             </span>
-            <span className="text-[10px] text-slate-500">Deterministic Engine Handoff</span>
+            <span className="text-[10px] text-slate-400">Deterministic Engine Handoff</span>
           </div>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {recentToolCalls.map((tc, idx) => (
               <div key={idx} className="p-2 rounded bg-slate-950/80 border border-slate-800 space-y-1">
                 <div className="text-emerald-300 font-semibold flex items-center gap-1.5">
-                  <CheckCircle className="w-3 h-3 text-emerald-400" />
+                  <CheckCircle className="w-3 h-3 text-emerald-400" aria-hidden="true" />
                   <span>Call: {tc.tool}()</span>
                 </div>
-                <div className="text-[11px] text-slate-400">
+                <div className="text-[11px] text-slate-300">
                   <strong>Input:</strong> {JSON.stringify(tc.input)}
                 </div>
                 <div className="text-[11px] text-teal-300">
@@ -124,8 +136,14 @@ How can I help you optimize your daily life today?
         </div>
       )}
 
-      {/* Chat Messages Container */}
-      <div className="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 min-h-[420px] max-h-[580px] overflow-y-auto space-y-4">
+      {/* Chat Messages Container with ARIA Live Log */}
+      <div
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-label="Conversation with PureAir AI"
+        className="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 min-h-[420px] max-h-[580px] overflow-y-auto space-y-4"
+      >
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -140,14 +158,18 @@ How can I help you optimize your daily life today?
                   : 'bg-slate-800 text-emerald-400 border border-emerald-500/30'
               }`}
             >
-              {msg.sender === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+              {msg.sender === 'user' ? (
+                <User className="w-4 h-4" aria-label="You" />
+              ) : (
+                <Bot className="w-4 h-4" aria-label="PureAir AI" />
+              )}
             </div>
 
             <div
               className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[85%] ${
                 msg.sender === 'user'
                   ? 'bg-emerald-600 text-white rounded-tr-none'
-                  : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none whitespace-pre-line'
+                  : 'bg-slate-900 border border-slate-800 text-slate-100 rounded-tl-none whitespace-pre-line'
               }`}
             >
               {msg.text}
@@ -156,27 +178,28 @@ How can I help you optimize your daily life today?
         ))}
 
         {isLoading && (
-          <div className="flex items-center gap-2 text-xs text-emerald-400 p-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <div role="status" aria-live="polite" className="flex items-center gap-2 text-xs text-emerald-400 p-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" aria-hidden="true" />
             <span className="font-mono">PureAir AI is orchestrating environmental tools and atmospheric physics...</span>
           </div>
         )}
       </div>
 
-      {/* Suggested Scenario Chips */}
-      <div className="flex flex-wrap gap-2 text-xs">
+      {/* Suggested Scenario Chips with Proper Button Roles */}
+      <div role="group" aria-label="Suggested Prompt Questions" className="flex flex-wrap gap-2 text-xs">
         {quickScenarios.map((scen, idx) => (
           <button
             key={idx}
+            type="button"
             onClick={() => handleSend(scen)}
-            className="px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/50 text-slate-300 transition text-[11px]"
+            className="px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/50 text-slate-200 transition text-[11px] focus-visible:ring-2 focus-visible:ring-emerald-400 focus:outline-none"
           >
             {scen}
           </button>
         ))}
       </div>
 
-      {/* Input Box */}
+      {/* Accessible Input Form */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -184,23 +207,28 @@ How can I help you optimize your daily life today?
         }}
         className="flex items-center gap-2"
       >
+        <label htmlFor="assistant-input" className="sr-only">
+          Ask PureAir AI about low-emission routines, DIY filters, or health impacts
+        </label>
         <input
+          id="assistant-input"
           type="text"
           placeholder="Ask PureAir AI about low-emission routines, DIY filters, or health impacts..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           disabled={isLoading}
-          className="flex-1 bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+          className="flex-1 bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-xs sm:text-sm text-slate-100 placeholder-slate-400 focus-visible:ring-2 focus-visible:ring-emerald-400 focus:outline-none transition"
         />
         <button
           type="submit"
+          aria-label="Send message to PureAir AI"
           disabled={isLoading || !inputText.trim()}
-          className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-emerald-500/20 shrink-0"
+          className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-emerald-500/20 shrink-0 focus-visible:ring-2 focus-visible:ring-white focus:outline-none"
         >
           <span>Send</span>
-          <Send className="w-4 h-4" />
+          <Send className="w-4 h-4" aria-hidden="true" />
         </button>
       </form>
-    </div>
+    </section>
   );
 }

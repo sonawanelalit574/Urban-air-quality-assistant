@@ -1,41 +1,49 @@
 import React, { useState } from 'react';
-import { Sun, AlertCircle, Info } from 'lucide-react';
+import { Sun, AlertCircle } from 'lucide-react';
 
 export default function DiurnalChart({ activeCity }) {
   const [selectedHour, setSelectedHour] = useState(activeCity.hourly[3] || activeCity.hourly[0]);
   const maxAqi = Math.max(...activeCity.hourly.map(h => h.aqi), 450);
 
   return (
-    <div className="glass-card rounded-2xl p-5 border border-slate-800 space-y-4">
+    <section
+      role="region"
+      aria-label="24-Hour Thermal Inversion and Smog Curve"
+      className="glass-card rounded-2xl p-5 border border-slate-800 space-y-4"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div>
-          <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
+          <h2 className="font-bold text-sm text-slate-100 flex items-center gap-2">
             <span>24-Hour Thermal Inversion & Smog Curve</span>
             <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
               Diurnal Model
             </span>
-          </h3>
+          </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Hover over time slots to inspect temperature, PM2.5 concentration, and atmospheric boundary stability.
+            Use arrow keys, mouse, or tap to inspect hourly temperature, PM2.5 concentration, and boundary layer trapping.
           </p>
         </div>
 
         {/* Legend */}
         <div className="flex items-center gap-3 text-[11px] text-slate-400">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500" aria-hidden="true"></span>
             <span>Inversion Peak Trap</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" aria-hidden="true"></span>
             <span>Solar Clean Window</span>
           </div>
         </div>
       </div>
 
-      {/* Interactive Bar Chart Visualization */}
+      {/* Interactive Bar Chart Visualization with Keyboard Navigation */}
       <div className="pt-6 pb-2">
-        <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 items-end h-44 border-b border-slate-800 pb-2">
+        <div
+          role="group"
+          aria-label="Hourly AQI Data Points"
+          className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 items-end h-44 border-b border-slate-800 pb-2"
+        >
           {activeCity.hourly.map((h, idx) => {
             const heightPercent = Math.min(100, Math.max(15, (h.aqi / maxAqi) * 100));
             const isSelected = selectedHour.time === h.time;
@@ -52,16 +60,27 @@ export default function DiurnalChart({ activeCity }) {
             return (
               <div
                 key={idx}
+                role="button"
+                tabIndex={0}
+                aria-label={`Time ${h.time}, AQI ${h.aqi}, PM2.5 ${h.pm25} micrograms per cubic meter ${
+                  isSolar ? ', Solar Clean Air Window' : isPeak ? ', Peak Smog Trap' : ''
+                }`}
                 onMouseEnter={() => setSelectedHour(h)}
                 onClick={() => setSelectedHour(h)}
-                className="flex flex-col items-center h-full justify-end cursor-pointer group relative"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedHour(h);
+                  }
+                }}
+                className="flex flex-col items-center h-full justify-end cursor-pointer group relative focus-visible:ring-2 focus-visible:ring-emerald-400 focus:outline-none rounded-t"
               >
                 {/* Floating indicator */}
                 {isSolar && (
-                  <Sun className="w-3.5 h-3.5 text-emerald-400 absolute -top-5 animate-pulse" />
+                  <Sun className="w-3.5 h-3.5 text-emerald-400 absolute -top-5 animate-pulse" aria-hidden="true" />
                 )}
                 {isPeak && (
-                  <AlertCircle className="w-3.5 h-3.5 text-red-400 absolute -top-5" />
+                  <AlertCircle className="w-3.5 h-3.5 text-red-400 absolute -top-5" aria-hidden="true" />
                 )}
 
                 {/* Bar */}
@@ -83,7 +102,11 @@ export default function DiurnalChart({ activeCity }) {
 
       {/* Selected Hour Details Box */}
       {selectedHour && (
-        <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-700/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div
+          role="status"
+          aria-live="polite"
+          className="p-3 rounded-xl bg-slate-900/90 border border-slate-700/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs"
+        >
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg font-mono font-bold text-sm ${
               selectedHour.isSolarWindow ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
@@ -98,7 +121,7 @@ export default function DiurnalChart({ activeCity }) {
                 <span>·</span>
                 <span>Temp: <span className="font-mono text-slate-300">{selectedHour.temp}°C</span></span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-300 mt-0.5">
                 {selectedHour.isSolarWindow
                   ? '☀️ Solar Window Active: Sunlight has warmed the ground, expanding boundary layer and flushing ground toxins.'
                   : selectedHour.isPeak
@@ -119,6 +142,6 @@ export default function DiurnalChart({ activeCity }) {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }

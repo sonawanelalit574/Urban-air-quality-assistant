@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, Sun, Shield, Droplets, Wind as WindIcon, Gauge, Clock, ChevronRight } from 'lucide-react';
+import { AlertTriangle, Sun, Shield, Wind as WindIcon, Gauge, ChevronRight } from 'lucide-react';
 import { getAQICategory } from '../services/airQualityService';
 
 export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine }) {
@@ -7,12 +7,20 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
   const whoRatio = Math.round((activeCity.pm25 / 15) * 10) / 10;
 
   return (
-    <div className="space-y-4">
+    <section
+      role="region"
+      aria-label="Current Air Quality and Inversion Telemetry"
+      className="space-y-4"
+    >
       {/* Top Banner Alert */}
-      <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-red-950/60 via-slate-900 to-slate-900 border border-red-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+      <div
+        role="alert"
+        aria-live="polite"
+        className="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-red-950/60 via-slate-900 to-slate-900 border border-red-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg"
+      >
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-lg bg-red-500/20 text-red-400 shrink-0 border border-red-500/30 animate-pulse">
-            <AlertTriangle className="w-5 h-5" />
+            <AlertTriangle className="w-5 h-5" aria-hidden="true" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -23,7 +31,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
                 Lid at {activeCity.inversionBoundaryMeters}m
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-300 mt-0.5">
               Cold ground air is locked under warm air. Particulates cannot disperse until midday solar radiation.
             </p>
           </div>
@@ -31,11 +39,13 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
 
         <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
           <button
+            type="button"
             onClick={onNavigateToRoutine}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition shadow-md shadow-emerald-500/20"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition shadow-md shadow-emerald-500/20 focus-visible:ring-2 focus-visible:ring-white focus:outline-none"
+            aria-label="Shift Daily Routine to Low Emission Windows"
           >
             <span>Shift Daily Routine</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -50,7 +60,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
                 Current US AQI (Air Quality Index)
               </span>
               <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-5xl font-black font-mono tracking-tight text-red-400">
+                <span className="text-5xl font-black font-mono tracking-tight text-red-400" aria-label={`Current AQI is ${activeCity.currentAqi}`}>
                   {activeCity.currentAqi}
                 </span>
                 <span className={`text-xs font-bold uppercase px-2.5 py-1 rounded-full ${aqiInfo.badge}`}>
@@ -59,7 +69,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
               </div>
             </div>
             <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300">
-              <Gauge className="w-6 h-6 text-emerald-400" />
+              <Gauge className="w-6 h-6 text-emerald-400" aria-hidden="true" />
             </div>
           </div>
 
@@ -80,7 +90,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-1.5">
-                <Sun className="w-4 h-4 text-emerald-400 animate-spin" style={{ animationDuration: '20s' }} />
+                <Sun className="w-4 h-4 text-emerald-400 animate-spin" style={{ animationDuration: '20s' }} aria-hidden="true" />
                 <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
                   Solar Clean Air Window
                 </span>
@@ -90,7 +100,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
                   {activeCity.solarWindowStart} – {activeCity.solarWindowEnd}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-300 mt-1">
                 Optimal time for cross-ventilation, school sports, and essential grocery errands.
               </p>
             </div>
@@ -112,15 +122,15 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
         <div className="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-sky-400" />
+              <Shield className="w-4 h-4 text-sky-400" aria-hidden="true" />
               <span className="text-xs font-semibold text-sky-400 uppercase tracking-wider">
                 Household Defense Protocol
               </span>
             </div>
-            <h4 className="text-sm font-bold text-slate-200 mt-2">
+            <h2 className="text-sm font-bold text-slate-200 mt-2">
               {activeProfile.label}
-            </h4>
-            <p className="text-xs text-slate-400 mt-1">
+            </h2>
+            <p className="text-xs text-slate-300 mt-1">
               {activeProfile.description}
             </p>
           </div>
@@ -142,7 +152,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
             <span className="text-xl font-bold font-mono text-red-400">{activeCity.pm25}</span>
             <span className="text-[10px] text-slate-400">µg/m³</span>
           </div>
-          <span className="text-[10px] text-red-400/90 font-medium">Safe Limit: 15 µg/m³</span>
+          <span className="text-[10px] text-red-400 font-medium">Safe Limit: 15 µg/m³</span>
         </div>
 
         <div className="glass-card p-3 rounded-xl border border-slate-800">
@@ -151,7 +161,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
             <span className="text-xl font-bold font-mono text-amber-400">{activeCity.pm10}</span>
             <span className="text-[10px] text-slate-400">µg/m³</span>
           </div>
-          <span className="text-[10px] text-amber-400/90 font-medium">Safe Limit: 45 µg/m³</span>
+          <span className="text-[10px] text-amber-400 font-medium">Safe Limit: 45 µg/m³</span>
         </div>
 
         <div className="glass-card p-3 rounded-xl border border-slate-800">
@@ -160,7 +170,7 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
             <span className="text-xl font-bold font-mono text-orange-400">{activeCity.no2}</span>
             <span className="text-[10px] text-slate-400">ppb</span>
           </div>
-          <span className="text-[10px] text-orange-400/90 font-medium">Traffic & Idling indicator</span>
+          <span className="text-[10px] text-orange-400 font-medium">Traffic & Idling indicator</span>
         </div>
 
         <div className="glass-card p-3 rounded-xl border border-slate-800">
@@ -168,13 +178,13 @@ export default function AQIHero({ activeCity, activeProfile, onNavigateToRoutine
           <div className="flex items-baseline gap-2 mt-1">
             <span className="text-lg font-bold font-mono text-slate-200">{activeCity.temp}°C</span>
             <span className="text-xs text-slate-400 flex items-center gap-1">
-              <WindIcon className="w-3 h-3 text-emerald-400" />
+              <WindIcon className="w-3 h-3 text-emerald-400" aria-hidden="true" />
               {activeCity.windSpeed} km/h
             </span>
           </div>
-          <span className="text-[10px] text-slate-400">Humidity: {activeCity.humidity}% (Traps fog)</span>
+          <span className="text-[10px] text-slate-300">Humidity: {activeCity.humidity}% (Traps fog)</span>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
