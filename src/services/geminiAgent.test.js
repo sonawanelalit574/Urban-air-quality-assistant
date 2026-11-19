@@ -50,4 +50,11 @@ describe('geminiAgent - GenAI Tool Orchestration & Agent Routing', () => {
     expect(response).toContain('Thermal Inversions');
     expect(response).toContain('Atmospheric Mechanism');
   });
+
+  it('handles general queries and dispatches fetch_air_quality tool', async () => {
+    const onToolCall = vi.fn();
+    const response = await executeAgentQuery('What is your advice for my city today?', testCity, testProfile, onToolCall);
+    expect(onToolCall).toHaveBeenCalledWith(expect.objectContaining({ tool: 'fetch_air_quality' }));
+    expect(response).toContain('PureAir AI Recommendations for Delhi-NCR');
+  });
 });

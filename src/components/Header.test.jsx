@@ -26,8 +26,16 @@ describe('Header Component - Accessibility & Navigation', () => {
     // Check accessible navigation
     expect(screen.getByRole('navigation', { name: /main navigation/i })).toBeInTheDocument();
 
-    // Check select controls have accessible labels
-    expect(screen.getByLabelText(/select city/i)).toBeInTheDocument();
+    // Check select controls have accessible labels and fire changes
+    const citySelect = screen.getByLabelText(/select city/i);
+    expect(citySelect).toBeInTheDocument();
+    fireEvent.change(citySelect, { target: { value: 'slc' } });
+    expect(setActiveCityId).toHaveBeenCalledWith('slc');
+
+    const profileSelect = screen.getByLabelText(/select household/i);
+    expect(profileSelect).toBeInTheDocument();
+    fireEvent.change(profileSelect, { target: { value: 'seniors_copd' } });
+    expect(setActiveProfileId).toHaveBeenCalledWith('seniors_copd');
   });
 
   it('triggers tab switching on click', () => {

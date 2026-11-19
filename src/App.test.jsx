@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import App from './App';
 
@@ -15,19 +15,24 @@ describe('App Component - End-to-End Integration', () => {
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
   });
 
-  it('navigates seamlessly between tabs', () => {
+  it('navigates seamlessly between tabs with asynchronous lazy-loading', async () => {
     render(<App />);
 
     // Click on Routine Planner tab
     const routineTab = screen.getByRole('tab', { name: /routine planner/i });
     fireEvent.click(routineTab);
 
-    // Verify Routine Planner region rendered
-    expect(screen.getByRole('region', { name: /inversion-aware daily routine/i })).toBeInTheDocument();
+    // Verify Routine Planner region rendered asynchronously
+    await waitFor(() => {
+      expect(screen.getByRole('region', { name: /inversion-aware daily routine/i })).toBeInTheDocument();
+    });
 
     // Click on IAQ tab
     const iaqTab = screen.getByRole('tab', { name: /indoor hacks & diy/i });
     fireEvent.click(iaqTab);
-    expect(screen.getByRole('region', { name: /indoor air quality/i })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByRole('region', { name: /indoor air quality/i })).toBeInTheDocument();
+    });
   });
 });

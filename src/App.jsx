@@ -1,15 +1,26 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import Header from './components/Header';
 import AQIHero from './components/AQIHero';
 import DiurnalChart from './components/DiurnalChart';
-import RoutineOptimizer from './components/RoutineOptimizer';
-import IAQStudio from './components/IAQStudio';
-import ImpactDashboard from './components/ImpactDashboard';
-import CommunityNetwork from './components/CommunityNetwork';
-import PureAirAssistant from './components/PureAirAssistant';
 import { CITIES, VULNERABILITY_PROFILES } from './data/mockData';
 import { fetchCityAirQuality } from './services/airQualityService';
-import { Sparkles, Shield, Leaf } from 'lucide-react';
+import { Sparkles, Shield, Leaf, Loader2 } from 'lucide-react';
+
+// Code-split dynamic tabs for maximum runtime performance & efficiency
+const RoutineOptimizer = lazy(() => import('./components/RoutineOptimizer'));
+const IAQStudio = lazy(() => import('./components/IAQStudio'));
+const ImpactDashboard = lazy(() => import('./components/ImpactDashboard'));
+const CommunityNetwork = lazy(() => import('./components/CommunityNetwork'));
+const PureAirAssistant = lazy(() => import('./components/PureAirAssistant'));
+
+function TabLoadingFallback() {
+  return (
+    <div role="status" aria-live="polite" className="min-h-[350px] flex flex-col items-center justify-center p-8 space-y-3">
+      <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" aria-hidden="true" />
+      <span className="text-xs text-slate-300 font-mono">Loading PureAir AI Module...</span>
+    </div>
+  );
+}
 
 export default function App() {
   const [activeCityId, setActiveCityId] = useState('delhi');
@@ -84,7 +95,7 @@ export default function App() {
                   <Sparkles className="w-4 h-4 text-emerald-400" aria-hidden="true" />
                 </div>
                 <h3 className="font-bold text-sm text-slate-100">Inversion-Shifted Routine Planner</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-300 leading-relaxed">
                   Avoid the 07:00–09:30 AM ground inversion trap. Shift errands to the Solar Window and cut personal PM2.5 intake by up to 68%.
                 </p>
               </button>
@@ -102,7 +113,7 @@ export default function App() {
                   <Leaf className="w-4 h-4 text-sky-400" aria-hidden="true" />
                 </div>
                 <h3 className="font-bold text-sm text-slate-100">DIY Corsi-Rosenthal Box Studio</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-300 leading-relaxed">
                   Build a 450 CFM air purifier for $35 that outcleans $400 retail HEPA towers. Calculate ACH and 90% purge times for any room.
                 </p>
               </button>
@@ -120,7 +131,7 @@ export default function App() {
                   <Shield className="w-4 h-4 text-teal-400" aria-hidden="true" />
                 </div>
                 <h3 className="font-bold text-sm text-slate-100">Interactive Environmental Agent</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-300 leading-relaxed">
                   Chat with PureAir AI to simulate specific family routines, kitchen exhaust protocols, and neighborhood green carpools.
                 </p>
               </button>
@@ -128,38 +139,39 @@ export default function App() {
           </div>
         )}
 
-        {activeTab === 'routine' && (
-          <RoutineOptimizer
-            activeCity={activeCityData}
-            activeProfile={activeProfile}
-          />
-        )}
+        <Suspense fallback={<TabLoadingFallback />}>
+          {activeTab === 'routine' && (
+            <RoutineOptimizer
+              activeCity={activeCityData}
+              activeProfile={activeProfile}
+            />
+          )}
 
-        {activeTab === 'iaq' && (
-          <IAQStudio activeCity={activeCityData} />
-        )}
+          {activeTab === 'iaq' && (
+            <IAQStudio activeCity={activeCityData} />
+          )}
 
-        {activeTab === 'impact' && (
-          <ImpactDashboard
-            activeCity={activeCityData}
-            activeProfile={activeProfile}
-          />
-        )}
+          {activeTab === 'impact' && (
+            <ImpactDashboard
+              activeProfile={activeProfile}
+            />
+          )}
 
-        {activeTab === 'community' && (
-          <CommunityNetwork activeCity={activeCityData} />
-        )}
+          {activeTab === 'community' && (
+            <CommunityNetwork activeCity={activeCityData} />
+          )}
 
-        {activeTab === 'assistant' && (
-          <PureAirAssistant
-            activeCity={activeCityData}
-            activeProfile={activeProfile}
-          />
-        )}
+          {activeTab === 'assistant' && (
+            <PureAirAssistant
+              activeCity={activeCityData}
+              activeProfile={activeProfile}
+            />
+          )}
+        </Suspense>
       </main>
 
       {/* Footer Landmark */}
-      <footer role="contentinfo" className="border-t border-slate-800 bg-slate-950 py-6 mt-12 text-xs text-slate-400">
+      <footer role="contentinfo" className="border-t border-slate-800 bg-slate-950 py-6 mt-12 text-xs text-slate-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-200">PureAir AI</span>
@@ -167,7 +179,7 @@ export default function App() {
             <span>Smart Sustainable Living Assistant</span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 text-slate-400">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-slate-300">
             <span>WHO 2021 Global AQ Guidelines</span>
             <span>·</span>
             <span>Berkeley Earth Muller Formula</span>
