@@ -60,8 +60,24 @@ export const AGENT_TOOLS = [
 export async function executeAgentQuery(userQuery, activeCity, activeProfile, onToolCall) {
   const queryLower = userQuery.toLowerCase();
 
-  // 1. School run & Morning commute during severe smog
-  if (queryLower.includes('school') || queryLower.includes('morning') || queryLower.includes('commute') || queryLower.includes('run in aqi')) {
+  // 1. Fog vs Smog & Thermal Inversions
+  if (queryLower.includes('fog') || queryLower.includes('inversion') || queryLower.includes('hurt') || queryLower.includes('chest')) {
+    return `### 🌫️ Why Winter Smog & Thermal Inversions Are Dangerously Toxic
+
+What looks like picturesque winter morning fog is often **chemical smog trapped by a thermal inversion**.
+
+**The Atmospheric Mechanism:**
+* **Normal Conditions**: Warm ground heats air, which rises and disperses vehicular and industrial exhaust into the upper troposphere.
+* **Winter Inversion**: On clear, cold nights, the ground rapidly radiates heat into space. A layer of cold, dense air pools at the surface beneath a layer of warm air. This warm lid acts like a **hermetic pot lid**, trapping all emissions below **${activeCity.inversionBoundaryMeters} meters**.
+* **Chemical Reaction**: High humidity (${activeCity.humidity}%) allows sulfur dioxide and nitrogen oxides to dissolve into water droplets, forming **secondary particulate matter (sulfates, nitrates, and acids)** that deeply penetrate the lung alveoli and cross into the bloodstream.
+
+**How PureAir AI Protects You:**
+* We track the exact hour the sun warms the surface enough to puncture the inversion lid (**Solar Ventilation Window: ${activeCity.solarWindowStart} – ${activeCity.solarWindowEnd}**).
+* Sync your outdoor lifestyle to this window to reduce lung toxic burden by over **65%**.`;
+  }
+
+  // 2. School run & Morning commute during severe smog
+  if (queryLower.includes('school') || queryLower.includes('commute') || queryLower.includes('run in aqi') || queryLower.includes('drop-off') || (queryLower.includes('morning') && !queryLower.includes('fog'))) {
     if (onToolCall) {
       onToolCall({
         tool: 'optimize_daily_routine',
@@ -151,21 +167,6 @@ Indoor cooking during winter inversion days is the **#1 source of acute indoor P
 * Spares children and asthma sufferers acute nocturnal bronchospasms.`;
   }
 
-  // 4. Fog vs Smog & Thermal Inversions
-  if (queryLower.includes('fog') || queryLower.includes('inversion') || queryLower.includes('hurt') || queryLower.includes('chest') || queryLower.includes('why')) {
-    return `### 🌫️ Why Winter Smog & Thermal Inversions Are Dangerously Toxic
-
-What looks like picturesque winter morning fog is often **chemical smog trapped by a thermal inversion**.
-
-**The Atmospheric Mechanism:**
-* **Normal Conditions**: Warm ground heats air, which rises and disperses vehicular and industrial exhaust into the upper troposphere.
-* **Winter Inversion**: On clear, cold nights, the ground rapidly radiates heat into space. A layer of cold, dense air pools at the surface beneath a layer of warm air. This warm lid acts like a **hermetic pot lid**, trapping all emissions below **${activeCity.inversionBoundaryMeters} meters**.
-* **Chemical Reaction**: High humidity (${activeCity.humidity}%) allows sulfur dioxide and nitrogen oxides to dissolve into water droplets, forming **secondary particulate matter (sulfates, nitrates, and acids)** that deeply penetrate the lung alveoli and cross into the bloodstream.
-
-**How PureAir AI Protects You:**
-* We track the exact hour the sun warms the surface enough to puncture the inversion lid (**Solar Ventilation Window: ${activeCity.solarWindowStart} – ${activeCity.solarWindowEnd}**).
-* Sync your outdoor lifestyle to this window to reduce lung toxic burden by over **65%**.`;
-  }
 
   // General query fallback
   if (onToolCall) {
